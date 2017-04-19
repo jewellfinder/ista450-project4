@@ -6,7 +6,7 @@
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
 
-import mdp, util
+import mdp, util, collections
 
 from learningAgents import ValueEstimationAgent
 
@@ -37,6 +37,27 @@ class ValueIterationAgent(ValueEstimationAgent):
     self.values = util.Counter() # A Counter is a dict with default 0
      
     "*** YOUR CODE HERE ***"
+
+    for i in (0,self.iterations): 
+        temp = util.Counter()
+
+        for state in self.mdp.getStates(): 
+            if self.mdp.isTerminal(state): 
+                temp[state] = 0
+            else: 
+                maxval = float("-inf")
+
+                for action in self.mdp.getPossibleActions(state): 
+                    total = 0
+                    for (s1, prob) in self.mdp.getTransitionStatesAndProbs(state, action):
+                        total += prob * (self.mdp.getReward(state,action,s1) + (self.discount*self.values[s1]))
+
+                    if total > maxval: 
+                        maxval = total
+                    temp[state] = (maxval) 
+
+    self.values = temp
+
     
   def getValue(self, state):
     """
@@ -54,7 +75,13 @@ class ValueIterationAgent(ValueEstimationAgent):
       to derive it on the fly.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    val = 0 
+    for (s1, prob) in self.mdp.getTransitionStatesAndProbs(self, action): 
+        val += prob * (self.mdp.getReward(state,action,s1) + (self.discount*self.values[s1]))
+
+    return val
+
+    #util.raiseNotDefined()
 
   def getPolicy(self, state):
     """
@@ -65,7 +92,20 @@ class ValueIterationAgent(ValueEstimationAgent):
       terminal state, you should return None.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    if self.mdp.isTerminal(state):
+        return None 
+
+    value = float("-inf")
+    policy = None
+
+    for action in self.mdp.getPossibleActions(state): 
+        temp = self.getQValue(state, action)
+        if temp >= value: 
+            value = temp
+            policy = action
+
+    return policy
+    #util.raiseNotDefined()
 
   def getAction(self, state):
     "Returns the policy at the state (no exploration)."
