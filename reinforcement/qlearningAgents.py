@@ -47,11 +47,11 @@ class QLearningAgent(ReinforcementAgent):
       a state or (state,action) tuple
     """
     "*** YOUR CODE HERE ***"
-    #still using a collection
+    #still using a counter
     if (state, action) not in self.values: 
       self.values[(state, action)] = 0.0
-    return self.values[(state, action)]
 
+    return self.values[(state, action)]
     #util.raiseNotDefined()
 
 
@@ -64,7 +64,7 @@ class QLearningAgent(ReinforcementAgent):
     """
     "*** YOUR CODE HERE ***"
     
-    
+
     #util.raiseNotDefined()
 
   def getPolicy(self, state):

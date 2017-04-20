@@ -48,12 +48,12 @@ class ValueIterationAgent(ValueEstimationAgent):
             else: 
                 maxval = -99999
 
-                for action in self.mdp.getPossibleActions(state): 
+                for action in self.mdp.getPossibleActions(state):  #iterate through actions to find the max 
                     total = 0
-
-                    for next, prob in self.mdp.getTransitionStatesAndProbs(state, action):
+                    for next, prob in self.mdp.getTransitionStatesAndProbs(state, action): 
+                        #sum of reward, the next state value, multiplied by transision probability. 
                         total += prob * (self.mdp.getReward(state,action,next) + (self.discount*self.values[next]))
-                    maxval = max(total, maxval) 
+                    maxval = max(total, maxval)  #get the max action
                     temp[state] = maxval
 
     self.values = temp      #set values = temp
@@ -76,10 +76,8 @@ class ValueIterationAgent(ValueEstimationAgent):
     """
     "*** YOUR CODE HERE ***"
     val = 0 
-    for trans in self.mdp.getTransitionStatesAndProbs(self, action): 
-        s1 = trans[0]
-        prob = trans[1]
-        val += prob * (self.mdp.getReward(state,action,s1) + (self.discount*self.values[s1]))
+    for next, prob in self.mdp.getTransitionStatesAndProbs(state, action): 
+        val += prob * (self.mdp.getReward(state,action,next) + (self.discount*self.values[next]))
 
     return val
 
@@ -94,12 +92,13 @@ class ValueIterationAgent(ValueEstimationAgent):
       terminal state, you should return None.
     """
     "*** YOUR CODE HERE ***"
+    value = -99999
+    policy = None
+
     if self.mdp.isTerminal(state):
         return None 
 
-    value = float("-inf")
-    policy = None
-
+    #find the best policy
     for action in self.mdp.getPossibleActions(state): 
         temp = self.getQValue(state, action)
         if temp >= value: 
