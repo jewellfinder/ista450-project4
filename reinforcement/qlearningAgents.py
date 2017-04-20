@@ -38,6 +38,7 @@ class QLearningAgent(ReinforcementAgent):
     ReinforcementAgent.__init__(self, **args)
 
     "*** YOUR CODE HERE ***"
+    self.values = util.Counter()
 
   def getQValue(self, state, action):
     """
@@ -46,7 +47,12 @@ class QLearningAgent(ReinforcementAgent):
       a state or (state,action) tuple
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    #still using a collection
+    if (state, action) not in self.values: 
+      self.values[(state, action)] = 0.0
+    return self.values[(state, action)]
+
+    #util.raiseNotDefined()
 
 
   def getValue(self, state):
@@ -57,7 +63,9 @@ class QLearningAgent(ReinforcementAgent):
       terminal state, you should return a value of 0.0.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
+    
+    #util.raiseNotDefined()
 
   def getPolicy(self, state):
     """

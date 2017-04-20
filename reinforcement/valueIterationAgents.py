@@ -6,7 +6,7 @@
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
 
-import mdp, util, collections
+import mdp, util
 
 from learningAgents import ValueEstimationAgent
 
@@ -38,25 +38,25 @@ class ValueIterationAgent(ValueEstimationAgent):
      
     "*** YOUR CODE HERE ***"
 
-    for i in (0,self.iterations): 
-        temp = util.Counter()
+    #start iterations 
+    for i in range(0,self.iterations): 
+        temp = util.Counter()       #temp counter dict to store the values of each state
 
         for state in self.mdp.getStates(): 
             if self.mdp.isTerminal(state): 
                 temp[state] = 0
             else: 
-                maxval = float("-inf")
+                maxval = -99999
 
                 for action in self.mdp.getPossibleActions(state): 
                     total = 0
-                    for (s1, prob) in self.mdp.getTransitionStatesAndProbs(state, action):
-                        total += prob * (self.mdp.getReward(state,action,s1) + (self.discount*self.values[s1]))
 
-                    if total > maxval: 
-                        maxval = total
-                    temp[state] = (maxval) 
+                    for next, prob in self.mdp.getTransitionStatesAndProbs(state, action):
+                        total += prob * (self.mdp.getReward(state,action,next) + (self.discount*self.values[next]))
+                    maxval = max(total, maxval) 
+                    temp[state] = maxval
 
-    self.values = temp
+    self.values = temp      #set values = temp
 
     
   def getValue(self, state):
@@ -76,7 +76,9 @@ class ValueIterationAgent(ValueEstimationAgent):
     """
     "*** YOUR CODE HERE ***"
     val = 0 
-    for (s1, prob) in self.mdp.getTransitionStatesAndProbs(self, action): 
+    for trans in self.mdp.getTransitionStatesAndProbs(self, action): 
+        s1 = trans[0]
+        prob = trans[1]
         val += prob * (self.mdp.getReward(state,action,s1) + (self.discount*self.values[s1]))
 
     return val
