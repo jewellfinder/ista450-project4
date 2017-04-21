@@ -63,6 +63,7 @@ class QLearningAgent(ReinforcementAgent):
       terminal state, you should return a value of 0.0.
     """
     "*** YOUR CODE HERE ***"
+
     legalAction = self.getLegalActions(state)
     if len(legalAction) == 0: 
       return 0.0
@@ -112,7 +113,7 @@ class QLearningAgent(ReinforcementAgent):
     if len(legalActions) == 0: 
       return None
     else: 
-      if(util.flipCoin(epsilon)): 
+      if(util.flipCoin(self.epsilon)): 
         action = random.choice(legalActions)
       else: 
         action = self.getPolicy(state)
@@ -130,15 +131,10 @@ class QLearningAgent(ReinforcementAgent):
       it will be called on your behalf
     """
     "*** YOUR CODE HERE ***"
-    qlist = []
-    legalActions = self.getLegalActions(state)
-    for action in legalActions:
-      qlist.append(self.getQValue(nextState, action))
-
 
     print "q: ", self.getQValue(state, action)
-    print "max qlist: ", max(qlist) 
-    self.values[(state,action)] = ((1-self.alpha) * self.getQValue(state,action)) + (self.alpha * (reward + self.discount * max(qlist)))
+    print "next val: ", self.getValue(nextState)
+    self.values[(state,action)] = ((1-self.alpha) * self.getQValue(state,action)) + (self.alpha * (reward + (self.discount * self.getValue(nextState))))
 
     #util.raiseNotDefined()
 
