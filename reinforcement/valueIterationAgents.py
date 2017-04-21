@@ -37,26 +37,19 @@ class ValueIterationAgent(ValueEstimationAgent):
     self.values = util.Counter() # A Counter is a dict with default 0
      
     "*** YOUR CODE HERE ***"
-
-    #start iterations 
+    #start iterations
     for i in range(0,self.iterations): 
-        temp = util.Counter()       #temp counter dict to store the values of each state
-
         for state in self.mdp.getStates(): 
             if self.mdp.isTerminal(state): 
-                temp[state] = 0
+                self.values[state] = 0
             else: 
-                maxval = -99999
-
+                qlist = []
                 for action in self.mdp.getPossibleActions(state):  #iterate through actions to find the max 
                     total = 0
-                    for next, prob in self.mdp.getTransitionStatesAndProbs(state, action): 
-                        #sum of reward, the next state value, multiplied by transision probability. 
-                        total += prob * (self.mdp.getReward(state,action,next) + (self.discount*self.values[next]))
-                    maxval = max(total, maxval)  #get the max action
-                    temp[state] = maxval
-
-    self.values = temp      #set values = temp
+                    val = self.getQValue(state, action)
+                    qlist.append(val)
+                self.values[state] = max(qlist)
+    
 
     
   def getValue(self, state):
@@ -77,7 +70,7 @@ class ValueIterationAgent(ValueEstimationAgent):
     "*** YOUR CODE HERE ***"
     val = 0 
     for next, prob in self.mdp.getTransitionStatesAndProbs(state, action): 
-        val += prob * (self.mdp.getReward(state,action,next) + (self.discount*self.values[next]))
+        val += (prob * (self.mdp.getReward(state,action,next) + (self.discount*self.values[next])))
 
     return val
 
