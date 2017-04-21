@@ -49,7 +49,7 @@ class QLearningAgent(ReinforcementAgent):
     "*** YOUR CODE HERE ***"
     #still using a counter
     if (state, action) not in self.values: 
-      self.values[(state, action)] = 0.0
+      return 0.0
 
     return self.values[(state, action)]
     #util.raiseNotDefined()
@@ -63,7 +63,15 @@ class QLearningAgent(ReinforcementAgent):
       terminal state, you should return a value of 0.0.
     """
     "*** YOUR CODE HERE ***"
-    
+    legalAction = self.getLegalActions(state)
+    if len(legalAction) == 0: 
+      return 0.0
+
+    qlist = [] 
+    for action in legalAction: 
+      qlist.append(self.getQValue(state, action))
+
+    return max(qlist)
 
     #util.raiseNotDefined()
 
@@ -74,7 +82,21 @@ class QLearningAgent(ReinforcementAgent):
       you should return None.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    value = float("-inf")
+    policy = None
+
+    if self.mdp.isTerminal(state): #terminal state does nothing
+        return None 
+
+    #find the best policy
+    for action in self.mdp.getPossibleActions(state): 
+        temp = self.getQValue(state, action)
+        if temp >= value: 
+            value = temp
+            policy = action
+
+    return policy
+    #util.raiseNotDefined()
 
   def getAction(self, state):
     """
@@ -91,8 +113,18 @@ class QLearningAgent(ReinforcementAgent):
     legalActions = self.getLegalActions(state)
     action = None
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    if len(legalActions) == 0: 
+      return None
+    else: 
+      if(util.flipCoin(epsilon)): 
+        action = random.choice(legalActions)
+      else: 
+        qlist = []
+        for action in legalActions:
+          qlist.append(self.getQValue(state, action))
+        action = max(qlist)
 
+    #util.raiseNotDefined()
     return action
 
   def update(self, state, action, nextState, reward):
@@ -105,7 +137,13 @@ class QLearningAgent(ReinforcementAgent):
       it will be called on your behalf
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    qlist = []
+    for action in legalActions:
+      qlist.append(self.getQValue(nextState, action))
+
+    self.qvals[(state,action)] = ((1-self.alpha) * self.getQValue(state,action)) + (self.alpha * (reward + self.discount * max(qlist)))
+
+    #util.raiseNotDefined()
 
 class PacmanQAgent(QLearningAgent):
   "Exactly the same as QLearningAgent, but with different default parameters"
