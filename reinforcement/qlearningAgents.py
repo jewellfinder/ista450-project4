@@ -67,11 +67,11 @@ class QLearningAgent(ReinforcementAgent):
     if len(legalAction) == 0: 
       return 0.0
 
-    qlist = [] 
+    temp = util.Counter()
     for action in legalAction: 
-      qlist.append(self.getQValue(state, action))
+      temp[action] =  self.getQValue(state, action)
 
-    return max(qlist)
+    return temp[temp.argMax()]
 
     #util.raiseNotDefined()
 
@@ -82,20 +82,15 @@ class QLearningAgent(ReinforcementAgent):
       you should return None.
     """
     "*** YOUR CODE HERE ***"
-    value = float("-inf")
-    policy = None
+    legalActions = self.getLegalActions(state)
+    if (len(legalActions)==0): 
+      return None
 
-    if self.mdp.isTerminal(state): #terminal state does nothing
-        return None 
+    temp = util.Counter()
+    for action in legalActions: 
+      temp[action] = self.getQValue(state, action)
 
-    #find the best policy
-    for action in self.mdp.getPossibleActions(state): 
-        temp = self.getQValue(state, action)
-        if temp >= value: 
-            value = temp
-            policy = action
-
-    return policy
+    return temp.argMax()
     #util.raiseNotDefined()
 
   def getAction(self, state):
@@ -113,16 +108,14 @@ class QLearningAgent(ReinforcementAgent):
     legalActions = self.getLegalActions(state)
     action = None
     "*** YOUR CODE HERE ***"
+
     if len(legalActions) == 0: 
       return None
     else: 
       if(util.flipCoin(epsilon)): 
         action = random.choice(legalActions)
       else: 
-        qlist = []
-        for action in legalActions:
-          qlist.append(self.getQValue(state, action))
-        action = max(qlist)
+        action = self.getPolicy(state)
 
     #util.raiseNotDefined()
     return action
@@ -138,10 +131,14 @@ class QLearningAgent(ReinforcementAgent):
     """
     "*** YOUR CODE HERE ***"
     qlist = []
+    legalActions = self.getLegalActions(state)
     for action in legalActions:
       qlist.append(self.getQValue(nextState, action))
 
-    self.qvals[(state,action)] = ((1-self.alpha) * self.getQValue(state,action)) + (self.alpha * (reward + self.discount * max(qlist)))
+
+    print "q: ", self.getQValue(state, action)
+    print "max qlist: ", max(qlist) 
+    self.values[(state,action)] = ((1-self.alpha) * self.getQValue(state,action)) + (self.alpha * (reward + self.discount * max(qlist)))
 
     #util.raiseNotDefined()
 
